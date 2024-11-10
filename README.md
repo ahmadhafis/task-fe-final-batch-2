@@ -1,35 +1,19 @@
 # task-fe-final-batch-2
 
-This template should help get you started developing with Vue 3 in Vite.
+### Login Page
+![login page](/src/assets/1.png)
 
-## Recommended IDE Setup
+### Home Page
+![home page](/src/assets/2.png)
 
-[VSCode](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur).
+### Change Password
+![pass page](/src/assets/3.png)
 
-## Customize configuration
+### Account List
+![list page](/src/assets/4.png)
 
-See [Vite Configuration Reference](https://vite.dev/config/).
+### Create Account
+![create page](/src/assets/5.png)
 
-## Project Setup
-
-```sh
-npm install
-```
-
-### Compile and Hot-Reload for Development
-
-```sh
-npm run dev
-```
-
-### Compile and Minify for Production
-
-```sh
-npm run build
-```
-
-### Lint with [ESLint](https://eslint.org/)
-
-```sh
-npm run lint
-```
+### Dompetku Page
+![dompetku page](/src/assets/6.png)

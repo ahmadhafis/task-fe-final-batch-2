@@ -1,88 +1,95 @@
-<template>
-  <v-container fluid fill-height>
-    <v-row align="center" justify="center">
-      <v-col cols="12" sm="8" md="4">
-        <v-card>
-          <v-card-title class="text-center pa-4">
-            Login
-          </v-card-title>
-
-          <v-card-text>
-            <v-form @submit.prevent="handleLogin" ref="form">
-              <v-text-field
-                v-model="username"
-                label="Username"
-                :rules="[v => !!v || 'Username is required']"
-                required
-                :prepend-icon= mdiAccount
-              />
-
-              <v-text-field
-                v-model="password"
-                label="Password"
-                :type="showPassword ? 'text' : 'password'"
-                :append-icon="showPassword ? mdiEye : mdiEyeOff"
-                @click:append="showPassword = !showPassword"
-                :rules="[v => !!v || 'Password is required']"
-                required
-                :prepend-icon = mdiLock
-              />
-            </v-form>
-          </v-card-text>
-
-          <v-card-actions class="pa-4">
-            <v-btn
-              color="primary"
-              block
-              size="large"
-              :loading="authStore.loading"
-              @click="handleLogin"
-            >
-              Login
-            </v-btn>
-          </v-card-actions>
-        </v-card>
-      </v-col>
-    </v-row>
-
-    <v-snackbar
-      v-model="showError"
-      color="error"
-      timeout="3000"
-    >
-      {{ errorMessage }}
-    </v-snackbar>
-  </v-container>
-</template>
-
 <script setup>
 import { ref } from 'vue'
+import { mdiAccountOutline, mdiLockOutline, mdiEye, mdiEyeOff } from '@mdi/js'
+import logo from '@/assets/Lazada.png'
+import { useUserStore } from '@/stores/user.js'
 import { useRouter } from 'vue-router'
-import { useAuthStore } from '@/stores/auth'
-import { mdiAccount, mdiLock, mdiEye, mdiEyeOff } from '@mdi/js'
 
 const router = useRouter()
-const authStore = useAuthStore()
+const userStore = useUserStore()
 
-const form = ref(null)
 const username = ref('')
 const password = ref('')
-const showPassword = ref(false)
-const showError = ref(false)
-const errorMessage = ref('')
+const submitErr = ref('') // error message
 
-const handleLogin = async () => {
-  if (!form.value.validate()) return
+const showPassword = ref(false)
+const submitInProgress = ref(false) // submit loading state
+
+async function submit() {
+  submitInProgress.value = true
+  submitErr.value = ''
 
   try {
-    await authStore.login({
+    await userStore.login({
       username: username.value,
-      password: password.value
+      password: password.value,
     })
-    router.push('/')
-  } catch (error) {
-    errorMessage.value = error.response?.data?.message || 'Login failed'
-    showError.value = true
+    // success
+    router.push({ name: 'home' })
+  } catch (err) {
+    if (err.response) {
+      submitErr.value = err.response.data.error
+    } else {
+      submitErr.value = err
+    }
   }
+
+  submitInProgress.value = false
 }
 </script>
+<template>
+  <div class="d-flex justify-center align-center h-100">
+    <div>
+      <v-form>
+        <v-img class="mx-auto my-6" max-width="228" :src="logo"></v-img>
+
+        <v-card class="mx-auto pa-8" elevation="12" min-width="448" rounded="lg" style="background-color: cornsilk;">
+          <div class="text-subtitle-1 text-medium-emphasis">Username</div>
+
+          <v-text-field
+            v-model="username"
+            density="compact"
+            placeholder="Username"
+            :prepend-inner-icon="mdiAccountOutline"
+            variant="outlined"
+          ></v-text-field>
+
+          <div
+            class="text-subtitle-1 text-medium-emphasis d-flex align-center justify-space-between"
+          >
+            Password
+          </div>
+
+          <v-text-field
+            v-model="password"
+            :append-inner-icon="showPassword ? mdiEyeOff : mdiEye"
+            :type="showPassword ? 'text' : 'password'"
+            density="compact"
+            autoComplete="true"
+            placeholder="Enter your password"
+            :prepend-inner-icon="mdiLockOutline"
+            variant="outlined"
+            @click:append-inner="showPassword = !showPassword"
+          ></v-text-field>
+
+          <v-card class="mb-5" color="error" variant="tonal" v-show="submitErr">
+            <v-card-text class="text-medium-emphasis text-caption text-center">
+              {{ submitErr }}
+            </v-card-text>
+          </v-card>
+
+          <v-btn
+            style="background-color: azure;"
+            size="large"
+            variant="tonal"
+            block
+            @click="submit"
+            :readonly="submitInProgress"
+          >
+            Login
+          </v-btn>
+        </v-card>
+      </v-form>
+    </div>
+  </div>
+</template>

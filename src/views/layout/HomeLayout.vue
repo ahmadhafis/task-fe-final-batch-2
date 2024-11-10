@@ -3,9 +3,10 @@
     <v-app id="app">
       <v-navigation-drawer v-model="drawer">
         <!-- sidebar -->
-        <v-sheet class="pa-4" color="primary">
-          <div class="font-weight-bold">Hello, C.C.</div>
-          May the Force be with you
+        <v-sheet class="pa-4" color="secondary">
+          <div class="font-weight-bold">Hello, {{ userStore.user?.name }}</div>
+          <div class="font-weight-bold">Your balance:</div>
+          <div class="font-weight-bold">Rp.{{ userStore.user?.balance }}</div>
         </v-sheet>
 
         <v-divider></v-divider>
@@ -31,7 +32,7 @@
 
       <v-app-bar>
         <v-app-bar-nav-icon @click="drawer = !drawer"></v-app-bar-nav-icon>
-        <v-img class="" max-width="100" :src="logo"></v-img>
+        <v-img class="" max-width="100" :src="logo" @click="goHome"></v-img>
 
         <v-spacer></v-spacer>
       </v-app-bar>
@@ -46,19 +47,36 @@
 <script setup>
 import { ref } from 'vue'
 import logo from '@/assets/Lazada.png'
-import { mdiHome, mdiLogout } from '@mdi/js'
+import {
+  mdiAccount,
+  mdiFormTextarea,
+  mdiHome,
+  mdiKeyChange,
+  mdiLogout,
+  mdiWallet,
+} from '@mdi/js'
 import { RouterView, useRouter } from 'vue-router'
+import { useUserStore } from '@/stores/user.js'
 
+const goHome = () => {
+  router.push('/')
+}
+const userStore = useUserStore()
 const router = useRouter()
 
 const drawer = ref(null)
 
 function logout() {
+  userStore.logout()
   router.push({ name: 'login' })
 }
 
 const sidebarLinks = [
   { icon: mdiHome, text: 'Home', route: '/' },
+  { icon: mdiKeyChange, text: 'Change Password', route: '/change-password' },
+  { icon: mdiAccount, text: 'Account List', route: '/account-list' },
+  { icon: mdiFormTextarea, text: 'Account Form', route: '/account-form' },
+  { icon: mdiWallet, text: 'Dompetku', route: '/dompetku' },
   { icon: mdiLogout, text: 'Logout', route: '/login', click: logout },
 ]
 </script>
